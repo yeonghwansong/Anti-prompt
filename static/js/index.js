@@ -151,26 +151,14 @@ function renderPromptRows(container, entries, order, title) {
   setupCarousel(shell);
 }
 
-function renderTeaser(container, manifest) {
-  const prompt = "a woman with long black hair is posing for a picture";
-  const group = "white-box";
-  const items = manifest.cog.filter((entry) => entry.group === group && entry.prompt === prompt);
-  const columns = document.createElement("div");
-  columns.className = "columns is-multiline";
-
-  ["clean", "i2vguard", "ours"].forEach((method) => {
-    const item = items.find((entry) => entry.method === method);
-    if (!item) return;
-    const label =
-      method === "clean" ? "Clean" : method === "i2vguard" ? "I2VGuard" : "Ours";
-    columns.appendChild(createVideoCard({ label, src: item.dst }));
-  });
-  container.appendChild(columns);
-}
-
-function createScoreChip(label, value) {
+function createScoreChip(label, value, tone = "neutral") {
   if (!value || value === "") return "";
-  return `<span class="score-chip"><strong>${label}</strong>${value}</span>`;
+  return `
+    <div class="score-chip score-chip--${tone}">
+      <span class="score-chip-label">${label}</span>
+      <span class="score-chip-value">${value}</span>
+    </div>
+  `;
 }
 
 function createDimensionStat(label, value) {
@@ -230,6 +218,53 @@ function buildVBenchStats(row) {
     .join("");
 }
 
+function getVBenchMetricValues(row) {
+  const mapping = {
+    i2v_subject: row.vbench_i2v_subject,
+    i2v_background: row.vbench_i2v_background,
+    subject_consistency: row.vbench_subject_consistency,
+    background_consistency: row.vbench_background_consistency,
+    aesthetic_quality: row.vbench_aesthetic_quality,
+    imaging_quality: row.vbench_imaging_quality,
+    motion_smoothness: row.vbench_motion_smoothness,
+    temporal_flickering: row.vbench_temporal_flickering
+  };
+
+  const used = (row.vbench_metrics_used || "")
+    .split("|")
+    .map((x) => x.trim())
+    .filter(Boolean);
+
+  const metrics = (used.length ? used : Object.keys(mapping))
+    .filter((metric) => mapping[metric] !== undefined && mapping[metric] !== null && mapping[metric] !== "");
+
+  return metrics
+    .map((metric) => ({ metric, value: Number(mapping[metric]) }))
+    .filter(({ value }) => !Number.isNaN(value));
+}
+
+function getVBenchAverageLabel(row) {
+  const values = getVBenchMetricValues(row);
+  if (!values.length) return "";
+
+  const normalized = values.map(({ metric, value }) => {
+    if (metric === "imaging_quality") return value / 100.0;
+    return value;
+  });
+
+  const avg = normalized.reduce((acc, value) => acc + value, 0) / normalized.length;
+  return `${(avg * 100).toFixed(1)}`;
+}
+
+function getJudgeTone(category, judge) {
+  const upper = category.toLowerCase();
+  const vbenchFlags = upper.includes("vbench flags quality");
+  if (vbenchFlags) {
+    return judge === "qwen" ? "good" : "bad";
+  }
+  return judge === "qwen" ? "bad" : "good";
+}
+
 function renderLLMSection(container, manifest, scores) {
   const scoreMap = new Map(scores.map((row) => [normalizeSampleName(row.sample), row]));
   const categories = [
@@ -261,19 +296,9 @@ function renderLLMSection(container, manifest, scores) {
                 </video>
                 <p class="video-caption">${entry.sample}</p>
                 <div class="llm-score-board">
-                  <div class="score-section-title">Qwen evaluation</div>
                   <div class="score-chip-row">
-                    ${createScoreChip("Qwen Mean", row.qwen_mean_score)}
-                  </div>
-                  <div class="dimension-grid">
-                    ${createDimensionStat("Subject Preservation", row.Subject_Preservation)}
-                    ${createDimensionStat("Structural Consistency", row.Structural_Consistency)}
-                    ${createDimensionStat("Dynamic Consistency", row.Dynamic_Consistency)}
-                    ${createDimensionStat("Artifact Suppression", row.Artifact_Presence)}
-                  </div>
-                  <div class="score-section-title score-section-title--vbench">VBench metrics</div>
-                  <div class="dimension-grid dimension-grid--vbench">
-                    ${buildVBenchStats(row)}
+                    ${createScoreChip("Qwen Mean", row.qwen_mean_score, getJudgeTone(category, "qwen"))}
+                    ${createScoreChip("VBench Mean", getVBenchAverageLabel(row), getJudgeTone(category, "vbench"))}
                   </div>
                 </div>
               </div>
@@ -327,8 +352,6 @@ window.addEventListener("scroll", () => {
 document.addEventListener("DOMContentLoaded", async () => {
   const manifest = await loadJSON("static/manifest.json");
   const scores = await loadJSON("static/llm_scores.json");
-
-  renderTeaser(document.getElementById("teaser-grid"), manifest);
 
   renderPromptRows(document.getElementById("cog-sections"), manifest.cog, {
     "white-box": [
