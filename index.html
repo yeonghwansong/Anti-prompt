@@ -28,13 +28,13 @@
   <title>Anti-Prompt | ECCV 2026</title>
 
   <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
-  <link rel="stylesheet" href="static/css/bulma.min.css?v=20260703a">
-  <link rel="stylesheet" href="static/css/fontawesome.all.min.css?v=20260703a">
-  <link rel="stylesheet" href="static/css/index.css?v=20260703a">
+  <link rel="stylesheet" href="static/css/bulma.min.css?v=20260811a">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css?v=20260811a">
+  <link rel="stylesheet" href="static/css/index.css?v=20260811a">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script defer src="static/js/index.js?v=20260703a"></script>
+  <script defer src="static/js/index.js?v=20260811a"></script>
 </head>
 <body>
   <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
@@ -70,13 +70,13 @@
                 </a>
               </span>
               <span class="link-block">
-                <a href="javascript:void(0)" aria-disabled="true" class="external-link button is-normal is-rounded is-dark is-disabled">
+                <a href="https://github.com/yeonghwansong/Anti-Prompt-code" target="_blank" rel="noopener noreferrer" class="external-link button is-normal is-rounded is-dark">
                   <span class="icon button-icon-svg" aria-hidden="true">
                     <svg viewBox="0 0 24 24" focusable="false">
                       <path d="M12 .5C5.65.5.5 5.65.5 12A11.5 11.5 0 0 0 8.36 22.06c.58.1.79-.25.79-.56 0-.28-.01-1.2-.02-2.17-3.18.69-3.85-1.35-3.85-1.35-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.74.4-1.24.72-1.53-2.54-.29-5.22-1.27-5.22-5.64 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.47.11-3.07 0 0 .96-.31 3.14 1.17a10.9 10.9 0 0 1 5.72 0c2.18-1.48 3.14-1.17 3.14-1.17.62 1.6.23 2.78.11 3.07.73.8 1.18 1.82 1.18 3.07 0 4.38-2.69 5.35-5.24 5.63.41.36.78 1.08.78 2.19 0 1.58-.01 2.85-.01 3.24 0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/>
                     </svg>
                   </span>
-                  <span>Code · Soon</span>
+                  <span>Code</span>
                 </a>
               </span>
             </div>
@@ -110,6 +110,42 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="section-header">
+        <h2 class="title is-3">Motivation</h2>
+        <p class="section-subtitle">
+          Prompt-free generation degrades broadly, not only in motion realism, but also in subject preservation,
+          scene structure, and temporal consistency.
+        </p>
+      </div>
+      <figure class="framework-figure">
+        <img src="static/images/motivation_overview.png" alt="Motivation figure showing prompt-conditioned and prompt-free I2V behavior">
+        <figcaption>
+          <strong>Figure 2.</strong> Removing text guidance causes failures that extend well beyond prompt following,
+          revealing that modern I2V systems depend on text as a stabilizing signal.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container is-max-desktop">
+      <div class="section-header">
+        <h2 class="title is-3">Framework</h2>
+        <p class="section-subtitle">
+          Anti-Prompt suppresses text-dependent pathways while amplifying visual-only interactions during denoising.
+        </p>
+      </div>
+      <figure class="framework-figure">
+        <img src="static/images/framework_overview.png" alt="Overview of Anti-Prompt framework">
+        <figcaption>
+          <strong>Figure 3.</strong> Overview of Anti-Prompt across cross-attention and full-attention I2V architectures.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -199,6 +235,13 @@
           our protocol captures protection failures that are easy to miss when only overall quality metrics are reported.
         </p>
       </div>
+      <figure class="framework-figure framework-figure--protocol">
+        <img src="static/images/eval_protocol_overview.png" alt="Video-LLM evaluation protocol examples">
+        <figcaption>
+          <strong>Protocol overview.</strong> Our Video-LLM evaluator inspects frame-grounded evidence before assigning
+          discrete scores, allowing it to capture failures that aggregate quality metrics can overlook.
+        </figcaption>
+      </figure>
       <div id="llm-sections"></div>
     </div>
   </section>
