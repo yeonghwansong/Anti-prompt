@@ -176,7 +176,18 @@ function formatVBenchValue(metric, value) {
   const num = Number(value);
   if (Number.isNaN(num)) return value;
   if (metric === "imaging_quality") return num.toFixed(1);
-  return `${(num * 100).toFixed(1)}%`;
+  return (num * 100).toFixed(1);
+}
+
+function buildQwenStats(row) {
+  return [
+    ["Subject", row.Subject_Preservation],
+    ["Structure", row.Structural_Consistency],
+    ["Dynamics", row.Dynamic_Consistency],
+    ["Artifacts", row.Artifact_Presence]
+  ]
+    .map(([label, value]) => createDimensionStat(label, value))
+    .join("");
 }
 
 function prettyMetricLabel(metric) {
@@ -275,7 +286,8 @@ function renderLLMSection(container, manifest, scores) {
   for (const category of categories) {
     const block = document.createElement("div");
     block.className = "group-block";
-    block.innerHTML = `<h3 class="group-title">${category}</h3>`;
+    const displayCategory = category.replaceAll("Qwen", "LLM");
+    block.innerHTML = `<h3 class="group-title">${displayCategory}</h3>`;
 
     const shell = createCarouselShell(category);
     const track = shell.querySelector(".carousel-track");
@@ -297,9 +309,13 @@ function renderLLMSection(container, manifest, scores) {
                 <p class="video-caption">${entry.sample}</p>
                 <div class="llm-score-board">
                   <div class="score-chip-row">
-                    ${createScoreChip("Qwen Mean", row.qwen_mean_score, getJudgeTone(category, "qwen"))}
+                    ${createScoreChip("LLM Mean", row.qwen_mean_score, getJudgeTone(category, "qwen"))}
                     ${createScoreChip("VBench Mean", getVBenchAverageLabel(row), getJudgeTone(category, "vbench"))}
                   </div>
+                  <p class="score-section-title">LLM dimensions</p>
+                  <div class="dimension-grid">${buildQwenStats(row)}</div>
+                  <p class="score-section-title">VBench dimensions</p>
+                  <div class="dimension-grid dimension-grid--vbench">${buildVBenchStats(row)}</div>
                 </div>
               </div>
             </div>

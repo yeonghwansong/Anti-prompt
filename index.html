@@ -28,13 +28,13 @@
   <title>Anti-Prompt | ECCV 2026</title>
 
   <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
-  <link rel="stylesheet" href="static/css/bulma.min.css?v=20260811a">
-  <link rel="stylesheet" href="static/css/fontawesome.all.min.css?v=20260811a">
-  <link rel="stylesheet" href="static/css/index.css?v=20260811a">
+  <link rel="stylesheet" href="static/css/bulma.min.css?v=20260812b">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css?v=20260812b">
+  <link rel="stylesheet" href="static/css/index.css?v=20260812d">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script defer src="static/js/index.js?v=20260811a"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script defer src="static/js/index.js?v=20260812c"></script>
 </head>
 <body>
   <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
@@ -46,8 +46,9 @@
       <div class="container is-max-desktop">
         <div class="columns is-centered">
           <div class="column has-text-centered">
-            <p class="conference-label">ECCV 2026</p>
-            <h1 class="title is-1 publication-title">Anti-Prompt: Image Protection against Text-Guided Image-to-Video Generation</h1>
+            <p class="conference-label"><span></span> ECCV 2026</p>
+            <h1 class="title is-1 publication-title"><span>Anti-Prompt:</span> Image Protection against<br class="title-break"> Text-Guided Image-to-Video Generation</h1>
+            <p class="publication-tagline">Imperceptible image protection that disrupts prompt-guided video generation.</p>
             <div class="is-size-5 publication-authors">
               <span class="author-block">Yeonghwan Song<sup>1</sup>,</span>
               <span class="author-block">Chanhui Lee<sup>2</sup>,</span>
@@ -86,10 +87,11 @@
     </div>
   </section>
 
-  <section class="section hero is-light">
+  <section class="section abstract-section">
     <div class="container is-max-desktop">
       <div class="columns is-centered has-text-centered">
         <div class="column is-four-fifths">
+          <p class="section-eyebrow">In brief</p>
           <h2 class="title is-3">Abstract</h2>
           <div class="content has-text-justified">
             <p>
@@ -108,6 +110,11 @@
               suppression using frame-grounded observations.
             </p>
           </div>
+          <div class="contribution-strip" aria-label="Key contributions">
+            <div><strong>01</strong><span>Architecture-aware protection for full- and cross-attention I2V models</span></div>
+            <div><strong>02</strong><span>Efficient optimization without auxiliary reference-video generation</span></div>
+            <div><strong>03</strong><span>Frame-grounded evaluation focused on protection-induced failures</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -116,10 +123,16 @@
   <section class="section">
     <div class="container is-max-desktop">
       <div class="section-header">
+        <p class="section-eyebrow">Why it works</p>
         <h2 class="title is-3">Motivation</h2>
         <p class="section-subtitle">
           Prompt-free generation degrades broadly, not only in motion realism, but also in subject preservation,
           scene structure, and temporal consistency.
+        </p>
+        <p class="section-subtitle">
+          The same pattern appears across CogVideoX, LTX-Video, and Wan: removing text destabilizes not only the
+          requested motion, but also the identity and geometry inherited from the input image. This observation
+          reveals that text acts as a broader stabilizing signal during I2V denoising.
         </p>
       </div>
       <figure class="framework-figure">
@@ -132,12 +145,18 @@
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section-tinted">
     <div class="container is-max-desktop">
       <div class="section-header">
+        <p class="section-eyebrow">Our approach</p>
         <h2 class="title is-3">Framework</h2>
         <p class="section-subtitle">
           Anti-Prompt suppresses text-dependent pathways while amplifying visual-only interactions during denoising.
+        </p>
+        <p class="section-subtitle">
+          Rather than overfitting a perturbation to one malicious prompt, Anti-Prompt targets the architectural
+          pathways through which text controls generation. This shifts denoising away from text guidance and
+          encourages protection-induced failures that persist under unseen prompts.
         </p>
       </div>
       <figure class="framework-figure">
@@ -146,84 +165,55 @@
           <strong>Figure 3.</strong> Overview of Anti-Prompt across cross-attention and full-attention I2V architectures.
         </figcaption>
       </figure>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container is-max-desktop">
-      <div class="section-header">
-        <h2 class="title is-3">Method Overview</h2>
-        <p class="section-subtitle">
-          Anti-Prompt is built on a simple but strong observation: modern I2V systems rely heavily on text guidance not only
-          for semantics, but also for preserving subject identity, spatial layout, and temporal coherence during denoising.
-        </p>
-      </div>
-      <div class="content has-text-justified page-content-block">
-        <p>
-          We first analyze prompt-free and weakly conditioned I2V generation and find that removing or attenuating text guidance
-          does not merely reduce motion expressiveness. It often causes broader failures, including subject drift, malformed
-          geometry, unstable scene structure, and visually obvious artifacts. This suggests that text conditioning acts as a
-          stabilizing signal throughout the generation process.
-        </p>
-        <p>
-          Anti-Prompt exploits this dependency by crafting imperceptible image perturbations that suppress text-conditioned
-          interactions while comparatively strengthening visual-only pathways. As a result, the protected image remains visually
-          natural to human viewers, but becomes significantly harder to animate into a clean, convincing video when paired with
-          a text prompt.
-        </p>
+      <div class="method-grid">
+        <article class="method-note">
+          <span>Full-attention</span>
+          <h3>Shift competition away from text</h3>
+          <p>In CogVideoX, video, image, and text tokens compete inside a shared attention operation. We suppress video-to-text interactions while strengthening video-to-video and video-to-image interactions, reducing the relative contribution of text under softmax normalization.</p>
+        </article>
+        <article class="method-note">
+          <span>Cross-attention</span>
+          <h3>Reduce the text residual</h3>
+          <p>In LTX-Video, text enters through a dedicated cross-attention branch. We reduce the energy of this text-dependent residual while amplifying the visual self-attention residual, making visual-only updates dominate the denoising trajectory.</p>
+        </article>
+        <article class="method-note">
+          <span>Image conditioning</span>
+          <h3>Distort the encoder representation</h3>
+          <p>An encoder objective additionally moves the protected image representation toward an uninformative target. The three losses are optimized jointly under an ℓ∞ perturbation budget, keeping the shared image visually unchanged while weakening its utility for animation.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <section class="section is-light alt-section">
+  <section class="section results-section">
     <div class="container is-max-desktop">
       <div class="section-header">
-        <h2 class="title is-3">What The Paper Shows</h2>
-        <p class="section-subtitle">
-          The paper studies both white-box and black-box transfer settings, and also evaluates robustness under common image
-          purification operations.
-        </p>
-      </div>
-      <div class="content has-text-justified page-content-block">
-        <p>
-          Across CogVideoX and LTX-Video, Anti-Prompt consistently pushes generated videos toward visible degradation while
-          preserving the appearance of the shared image itself. We compare against I2VGuard and show stronger disruption in
-          direct attack settings, cross-model transfer, and purification-based defenses such as crop-and-resize, JPEG, and
-          ADVClean.
-        </p>
-        <p>
-          The qualitative examples below are organized to show exactly this behavior: the clean image still produces a plausible
-          video, I2VGuard often leaves more usable generation quality, and our protected image more frequently leads to broken
-          structure, unstable dynamics, or content that no longer supports faithful reuse.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container is-max-desktop">
-      <div class="section-header">
-        <h2 class="title is-3">CogVideoX Qualitative Results</h2>
-        <p class="section-subtitle">Browse all white-box, black-box, and purification settings in a single horizontal viewer.</p>
+        <p class="section-eyebrow">Qualitative results · Model 01</p>
+        <h2 class="title is-3">CogVideoX</h2>
+        <p class="section-subtitle">CogVideoX represents the full-attention setting, where image, video, and text tokens interact in a shared attention space. The comparisons below place generations from the clean image, I2VGuard, and Anti-Prompt side by side.</p>
+        <p class="section-subtitle">Use the carousel to inspect white-box protection, transfer from LTX-Video, and robustness after crop-and-resize, JPEG compression, and ADVClean. Across these settings, successful protection appears as subject drift, malformed structure, unstable motion, or conspicuous rendering artifacts.</p>
       </div>
       <div id="cog-sections"></div>
     </div>
   </section>
 
-  <section class="section is-light alt-section">
+  <section class="section results-section section-tinted">
     <div class="container is-max-desktop">
       <div class="section-header">
-        <h2 class="title is-3">LTX-Video Qualitative Results</h2>
-        <p class="section-subtitle">Matched three-way comparisons collected into one carousel for easier side-by-side browsing.</p>
+        <p class="section-eyebrow">Qualitative results · Model 02</p>
+        <h2 class="title is-3">LTX-Video</h2>
+        <p class="section-subtitle">LTX-Video provides the complementary cross-attention setting, in which text features enter the visual stream through a separate residual branch. Each slide uses the same source image and prompt across all three methods for direct comparison.</p>
+        <p class="section-subtitle">These examples cover direct white-box optimization, black-box transfer from CogVideoX, and the same purification defenses. Together with CogVideoX, they show that the protection principle is not tied to a single conditioning architecture.</p>
       </div>
       <div id="ltx-sections"></div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section evaluator-section">
     <div class="container is-max-desktop">
       <div class="section-header">
-        <h2 class="title is-3">Video-LLM Evaluator Analysis</h2>
+        <p class="section-eyebrow">Evaluation protocol</p>
+        <h2 class="title is-3">Why Video-LLM Evaluation?</h2>
         <p class="section-subtitle">
           These examples motivate our Video-LLM protocol. In several cases, aggregate benchmark signals suggest that a
           video is still acceptable, while frame-level inspection reveals subject drift, structural collapse, temporal
@@ -234,14 +224,19 @@
           <strong>Dynamic Consistency</strong>, and <strong>Artifact Suppression</strong> with explicit visual evidence,
           our protocol captures protection failures that are easy to miss when only overall quality metrics are reported.
         </p>
+        <p class="section-subtitle">
+          We uniformly sample frames at four frames per second, including the first and last frame. The evaluator must
+          first report concrete observations grounded to frame indices and only then assign a discrete score from 1 to 5.
+          Higher scores indicate faithful and coherent animation; lower scores indicate more severe failures and therefore
+          stronger protection.
+        </p>
+        <p class="section-subtitle">
+          The protocol is not intended to replace VBench. VBench summarizes broad perceptual quality, whereas protection
+          can succeed through one salient failure that makes a video unsuitable for convincing misuse. We therefore report
+          both, validate the induced ranking against human judgments, and analyze repeatability and agreement across multiple
+          Video-LLM evaluators. The examples below expose cases where the two perspectives disagree.
+        </p>
       </div>
-      <figure class="framework-figure framework-figure--protocol">
-        <img src="static/images/eval_protocol_overview.png" alt="Video-LLM evaluation protocol examples">
-        <figcaption>
-          <strong>Protocol overview.</strong> Our Video-LLM evaluator inspects frame-grounded evidence before assigning
-          discrete scores, allowing it to capture failures that aggregate quality metrics can overlook.
-        </figcaption>
-      </figure>
       <div id="llm-sections"></div>
     </div>
   </section>
