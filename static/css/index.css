@@ -206,10 +206,11 @@ body {
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: white;
-  box-shadow: 0 8px 28px rgba(29, 34, 27, 0.05);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  mix-blend-mode: multiply;
 }
 
 .framework-figure figcaption {
